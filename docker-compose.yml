@@ -1,0 +1,35 @@
+version: '3'
+services:
+  postgres:
+    image: 'postgres:latest'
+    container_name: postgres_db
+  redis:
+    image: 'redis:latest'
+    container_name: redis_db
+  api:
+    build: .
+    volumes:
+      - .:/django
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGDATABASE=postgres
+      - PGPASSWORD=postgres_password
+      - PGPORT=5432
+    ports:
+      - 8000:8000
+    image: api:django
+    container_name: django_container
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on: 
+      - postgres
+      - redis
+  ngnix:
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./ngnix/
+    ports:
+      - 3050:80
