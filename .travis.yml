@@ -4,6 +4,8 @@ python:
   - "3.6"
 services:
   - docker
+
 before_script: pip install docker-compose
-script:
-  - docker-compose run api sh -c "python manage.py runserver"
+
+after_success:
+  - docker build -t 11710462/drfx .
